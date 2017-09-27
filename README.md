@@ -8,7 +8,8 @@ Time spent: **8** hours spent in total
 
 The following **required** functionality is completed:
 
-* [X] Adding an employee to the Organization  
+* [X] Adding an employee to the Organization
+* [X] Move the team. An employee can move to another team  within the organisation. When moving to a different team, an employee starts reporting to a new manager, without transferring his past subordinates to the new team. Instead, the most senior (based on start date) of his subordinates should be promoted to manage the employee’s former team.
 * [X] Employee goes on holiday and gies back. 
   * [X] When an employee goes on holidays, all his subordinates start reporting to the employee's manager temporarily. 
   * [X] When an employee comes back from holidays, all his subordinates come back to report to him, unless they have moved teams.

@@ -23,6 +23,13 @@ public class EmployeeService {
     @Autowired
     private TeamRepository teamRepository;
 
+    /**
+     * Create employee in database.
+     *
+     * @param employee
+     * @return
+     * @throws MultipleCEOException
+     */
     public Employee onCreateEmployee(Employee employee) throws MultipleCEOException {
         if (employee.getRole() == Role.CEO) {
             // Find all in position or on leave ceo.
@@ -39,6 +46,12 @@ public class EmployeeService {
         teamRepository.save(team);
     }
 
+    /**
+     * Get employee by given id.
+     *
+     * @param employeeId
+     * @return
+     */
     public Employee getEmployee(Long employeeId) {
         return employeeRepository.findOne(employeeId);
     }
@@ -47,6 +60,16 @@ public class EmployeeService {
         return employeeRepository.findAll();
     }
 
+    /**
+     * Get all direct reports by given employee id.
+     * 1. Find managed team by this employee.
+     * 2. Find all employee whose state is in position and team belongs tro the team found in step 1.
+     * 3. Find all employee whose state is in position and temp team belongs tro the team found in step 1.
+     * 4. Combine step 2 and step 3 as result.
+     * 
+     * @param employeeId
+     * @return
+     */
     public Set<Employee> allDirectReports(Long employeeId) {
         Employee employee = employeeRepository.findOne(employeeId);
         if (employee == null)
@@ -62,6 +85,15 @@ public class EmployeeService {
         return directReports;
     }
 
+    /**
+     * When an employee goes on holidays:
+     * 1. The employee will have on leave state.
+     * 2. all his subordinates have temp team to the on holiday employe's team .
+     *
+     * @param employeeId employee id who goes on holiday.
+     * @throws InvalidStateChangeException
+     * @throws NoSuchEmployeeException
+     */
     public void onLeave(Long employeeId) throws InvalidStateChangeException, NoSuchEmployeeException {
         Employee employee = employeeRepository.findOne(employeeId);
         System.out.println(employee);
@@ -76,6 +108,15 @@ public class EmployeeService {
         }
     }
 
+    /**
+     * When an employee comes back from holidays,:
+     * 1. The employee will have in position state.
+     * 2. all his subordinates have temp team will remove their temp team.
+     *
+     * @param employeeId employee id who comes back from holiday.
+     * @throws InvalidStateChangeException
+     * @throws NoSuchEmployeeException
+     */
     public void onLeaveFinished(Long employeeId) throws InvalidStateChangeException, NoSuchEmployeeException {
         Employee employee = employeeRepository.findOne(employeeId);
         if (employee == null)
@@ -128,11 +169,27 @@ public class EmployeeService {
         return new HashSet<>(employeeRepository.findByTeam(team));
     }
 
+    /**
+     * Find most senior reports based on earliest hire date.
+     * @param team
+     * @return
+     */
     private Optional<Employee> mostSeniorPermanent(Team team) {
         Collection<Employee> employees = employeeRepository.findByTeam(team);
         return employees.stream().filter(Employee::isPermanent).min(Comparator.comparing(Employee::getHireDate));
     }
 
+    /**
+     * Move the team. An employee can move to another team  within the organisation. When moving happened,
+     * 1. The moving employee will have new team associated.
+     * 2. Find the most senior in his team, move the most senior to moving employee's current team.
+     * 3. If the most senior is managed a team already. promote managed team as well.
+     *
+     * @param employeeId moving employee's id
+     * @param newTeamId moving team's id
+     * @throws NoSuchEmployeeException no employee by given employee id
+     * @throws NoSuchTeamException no team found by given id
+     */
     public void moveNewTeam(Long employeeId, Long newTeamId) throws NoSuchEmployeeException, NoSuchTeamException {
         Employee employee = employeeRepository.findOne(employeeId);
         if (employee == null)
@@ -167,6 +224,13 @@ public class EmployeeService {
         }
     }
 
+    /**
+     *
+     * @param employeeId
+     * @throws NoSuchEmployeeException
+     * @throws MultipleCEOException
+     * @throws NotAuthroziedPromotionException
+     */
     public void promote(Long employeeId) throws NoSuchEmployeeException, MultipleCEOException, NotAuthroziedPromotionException {
         Employee employee = employeeRepository.findOne(employeeId);
         if (employee == null)

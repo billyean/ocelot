@@ -336,6 +336,14 @@ public class EmployeeRestControllerTest {
 
     }
 
+    /**
+     *
+     * An employee can move to another team  within the organisation. When moving to a different team, an employee
+     * starts reporting to a new manager, without transferring his past subordinates to the new team. Instead, the most
+     * senior (based on start date) of his subordinates should be promoted to manage the employee’s former team.
+     *
+     * @throws Exception
+     */
     @Test
     public void testOnMove() throws Exception {
         // direct1_2 has 24 direct report, one manager and 20 permanent employee.
@@ -370,7 +378,7 @@ public class EmployeeRestControllerTest {
     }
 
     @Test
-    public void testOnPromoteFailure() throws Exception {
+    public void testOnPromoteFailure1() throws Exception {
         // director1_1 only has 12 total reports, should not be able to be promoted
         this.mockMvc.perform(post("/employee/" + director1_1.getId() + "/action")
                 .content(json(new Action("promote")))
