@@ -295,8 +295,7 @@ public class EmployeeService {
         Role nextLevel = employee.getRole().nextLevel();
         Set<Employee> allReports = allReport(employee);
         Set<Employee> directReports = directReport(employee);
-
-        int numOfReports = allReport(employee).size();
+        
         Set<Employee> allDirectManagers
                 = directReports.stream().filter(Employee::isManager).collect(toSet());
 
@@ -305,11 +304,13 @@ public class EmployeeService {
                 throw new MultipleCEOException();
             case VP:
                 if(allReports.size() < 40 || allDirectManagers.size() < 4) {
-                    throw new NotAuthroziedPromotionException("To be promoted to VP needs at least 40 employees in his organisation including at least 4 directors");
+                    throw new NotAuthroziedPromotionException(
+                            "To be promoted to VP needs at least 40 employees in his organisation including at least 4 directors");
                 }
             case Director:
                 if(allReports.size() < 20 || allDirectManagers.size() < 2) {
-                    throw new NotAuthroziedPromotionException("To be promoted to Directors needs at least 20 employees in his organisation including at least 2 managers");
+                    throw new NotAuthroziedPromotionException(
+                            "To be promoted to Directors needs at least 20 employees in his organisation including at least 2 managers");
                 }
         }
         Employee supervisor = employee.getTeam().getManager();
