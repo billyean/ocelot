@@ -66,7 +66,7 @@ public class EmployeeService {
      * 2. Find all employee whose state is in position and team belongs tro the team found in step 1.
      * 3. Find all employee whose state is in position and temp team belongs tro the team found in step 1.
      * 4. Combine step 2 and step 3 as result.
-     * 
+     *
      * @param employeeId
      * @return
      */
