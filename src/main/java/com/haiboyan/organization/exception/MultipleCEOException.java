@@ -15,6 +15,9 @@
  */
 package com.haiboyan.organization.exception;
 
+/**
+ * MultipleCEOException thrown when trying to create or promote second CEO.
+ */
 public class MultipleCEOException extends Exception {
     public MultipleCEOException() {
         super("Can't have two CEOs");
