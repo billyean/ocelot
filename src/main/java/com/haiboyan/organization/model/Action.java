@@ -15,6 +15,9 @@
  */
 package com.haiboyan.organization.model;
 
+/**
+ * Action should be onLeave, comeBack or promote.
+ */
 public class Action {
     private String name;
 

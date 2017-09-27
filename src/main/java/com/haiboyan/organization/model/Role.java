@@ -15,6 +15,9 @@
  */
 package com.haiboyan.organization.model;
 
+/**
+ * Employee role, the level describes the rank in the organization.
+ */
 public enum Role {
     CEO(1, "CEO"),
     VP(2, "Vice President"),
