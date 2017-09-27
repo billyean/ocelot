@@ -60,6 +60,10 @@ public class Employee {
         return state == State.IN_POSITION;
     }
 
+    public boolean isValid() {
+        return state != State.QUITTED;
+    }
+
     public String getName() {
         return name;
     }

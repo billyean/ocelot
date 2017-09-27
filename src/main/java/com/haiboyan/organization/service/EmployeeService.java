@@ -28,7 +28,7 @@ public class EmployeeService {
      *
      * @param employee
      * @return
-     * @throws MultipleCEOException
+     * @throws MultipleCEOException if trying to create a CEO role employee but CEO existed already.
      */
     public Employee onCreateEmployee(Employee employee) throws MultipleCEOException {
         if (employee.getRole() == Role.CEO) {
@@ -49,15 +49,36 @@ public class EmployeeService {
     /**
      * Get employee by given id.
      *
-     * @param employeeId
+     * @param employeeId employee id
      * @return
      */
     public Employee getEmployee(Long employeeId) {
         return employeeRepository.findOne(employeeId);
     }
 
-    public List<Employee> allEmployees() {
-        return employeeRepository.findAll();
+
+    /**
+     * Get employee's manager by given id.
+     *
+     * @param employeeId employee id
+     * @return
+     */
+    public Employee getEmployeeManager(Long employeeId) {
+        Employee employee =  employeeRepository.findOne(employeeId);
+        if (employee == null) {
+            return null;
+        }
+
+        Team team = teamRepository.findOne(employee.getTeam().getId());
+        return team.getManager();
+    }
+
+    /**
+     * Get all valid employees in organization
+     * @return
+     */
+    public Set<Employee> allEmployees() {
+        return employeeRepository.findAll().stream().filter(Employee::isValid).collect(toSet());
     }
 
     /**
@@ -96,7 +117,6 @@ public class EmployeeService {
      */
     public void onLeave(Long employeeId) throws InvalidStateChangeException, NoSuchEmployeeException {
         Employee employee = employeeRepository.findOne(employeeId);
-        System.out.println(employee);
         if (employee == null)
             throw new NoSuchEmployeeException(employeeId);
         stateChange(employee, State.ON_LEAVE);
