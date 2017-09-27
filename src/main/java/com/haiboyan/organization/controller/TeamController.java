@@ -46,9 +46,9 @@ public class TeamController {
     ResponseEntity<?> updateTeam(@RequestBody Team team) {
         try {
             employeeService.onCreateTeam(team);
-            return new ResponseEntity(HttpStatus.CREATED);
+            return new ResponseEntity(HttpStatus.OK);
         } catch (Exception ex) {
-            return new ResponseEntity(ex.getMessage(), HttpStatus.CONFLICT);
+            return new ResponseEntity(ex.getMessage(), HttpStatus.FORBIDDEN);
         }
     }
 }

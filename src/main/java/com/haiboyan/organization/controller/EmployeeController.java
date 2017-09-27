@@ -47,6 +47,18 @@ public class EmployeeController {
         }
     }
 
+    @RequestMapping(method = RequestMethod.PUT)
+    ResponseEntity<?> updateEmployee(@RequestBody Employee employee) {
+        try {
+            Employee created = employeeService.onCreateEmployee(employee);
+            return new ResponseEntity(created, HttpStatus.OK);
+        } catch (MultipleCEOException ex) {
+            return new ResponseEntity(ex.getMessage(), HttpStatus.CONFLICT);
+        } catch (Exception ex) {
+            return new ResponseEntity(ex.getMessage(), HttpStatus.FORBIDDEN);
+        }
+    }
+
     @RequestMapping(method = RequestMethod.GET, value = "/{employeeId}")
     Employee getEmployee(@PathVariable Long employeeId) {
         return employeeService.getEmployee(employeeId);

@@ -164,6 +164,12 @@ public class EmployeeService {
         }
     }
 
+    /**
+     * Change employee's state to new state.
+     * @param employee instance of employee
+     * @param newState new state
+     * @throws InvalidStateChangeException such a change is invalid
+     */
     private void stateChange(Employee employee, State newState) throws InvalidStateChangeException {
         if (!employee.getState().validNewState(newState)) {
             throw new InvalidStateChangeException(employee.getState(), newState);
@@ -172,6 +178,12 @@ public class EmployeeService {
         employeeRepository.save(employee);
     }
 
+    /**
+     * Change employee's state into quitted, and this employee will be not valid. Also change employee managed team's
+     * manager to null.
+     *
+     * @param employee instance of employee
+     */
     public void onQuit(Employee employee) {
         employee.setState(State.QUITTED);
         employeeRepository.save(employee);
@@ -199,6 +211,11 @@ public class EmployeeService {
         return reports;
     }
 
+    /**
+     * Get all direct reports by given employee's instance
+     * @param employee instance of employee
+     * @return set of all direct reports to given employee
+     */
     private Set<Employee> directReport(Employee employee) {
         Team team = teamRepository.findByManagerId(employee.getId());
         return new HashSet<>(employeeRepository.findByTeam(team));
@@ -206,8 +223,8 @@ public class EmployeeService {
 
     /**
      * Find most senior reports based on earliest hire date.
-     * @param team
-     * @return
+     * @param team instance of team.
+     * @return most senior employee in this team, null if there is no valid employee in the team.
      */
     private Optional<Employee> mostSeniorPermanent(Team team) {
         Collection<Employee> employees = employeeRepository.findByTeam(team);
@@ -260,8 +277,12 @@ public class EmployeeService {
     }
 
     /**
+     * Promote a employee by given employee id
+     * 1. Check if such a promotion is valid.
+     * 2. Promote this employee to higher level team.
      *
-     * @param employeeId
+     * @param employeeId employee id.
+     *
      * @throws NoSuchEmployeeException
      * @throws MultipleCEOException
      * @throws NotAuthroziedPromotionException
