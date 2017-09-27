@@ -283,9 +283,9 @@ public class EmployeeService {
      *
      * @param employeeId employee id.
      *
-     * @throws NoSuchEmployeeException
-     * @throws MultipleCEOException
-     * @throws NotAuthroziedPromotionException
+     * @throws NoSuchEmployeeException employee is not found by given employee id.
+     * @throws MultipleCEOException if trying to promote a second CEO.
+     * @throws NotAuthroziedPromotionException if such promotion is in valid
      */
     public void promote(Long employeeId) throws NoSuchEmployeeException, MultipleCEOException, NotAuthroziedPromotionException {
         Employee employee = employeeRepository.findOne(employeeId);
@@ -295,7 +295,7 @@ public class EmployeeService {
         Role nextLevel = employee.getRole().nextLevel();
         Set<Employee> allReports = allReport(employee);
         Set<Employee> directReports = directReport(employee);
-        
+
         Set<Employee> allDirectManagers
                 = directReports.stream().filter(Employee::isManager).collect(toSet());
 

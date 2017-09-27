@@ -46,11 +46,14 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.*;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = OrganizationApplication.class)
@@ -74,9 +77,11 @@ public class EmployeeRestControllerTest {
 
     private Employee director1_1, director1_2, director1_3, director1_4, director2_1, director2_2, director2_3;
 
-    private Team l3Team1_1_1, l3Team1_1_2, l3Team1_2_1, l3Team1_2_2, l3Team1_2_3, l3Team1_2_4, l3Team1_3_1, l3Team1_4_1, l3Team2_2_1, l3Team2_2_2, l3Team2_2_3, l3Team2_2_4, l3Team2_3_1;
+    private Team l3Team1_1_1, l3Team1_1_2, l3Team1_2_1, l3Team1_2_2, l3Team1_2_3, l3Team1_2_4, l3Team1_3_1, l3Team1_4_1,
+            l3Team2_2_1, l3Team2_2_2, l3Team2_2_3, l3Team2_2_4, l3Team2_3_1;
 
-    private Employee manager1_1_1, manager1_1_2, manager1_2_1, manager1_2_2, manager1_2_3, manager1_2_4, manager1_3_1, manager1_4_1, manager2_2_1, manager2_2_2, manager2_2_3, manager2_2_4, manager2_3_1;
+    private Employee manager1_1_1, manager1_1_2, manager1_2_1, manager1_2_2, manager1_2_3, manager1_2_4, manager1_3_1, manager1_4_1,
+            manager2_2_1, manager2_2_2, manager2_2_3, manager2_2_4, manager2_3_1;
 
     private List<Employee> employees1_1_1;
 
@@ -298,7 +303,7 @@ public class EmployeeRestControllerTest {
     @Test
     public void testAddEmployee() throws Exception {
         int index = 1;
-        for (Role role :EnumSet.allOf(Role.class)) {
+        for (Role role : EnumSet.allOf(Role.class)) {
             Employee employee = new Employee("User" + index, LocalDate.now(), role);
             if (role == Role.CEO) {
                 this.mockMvc.perform(post("/employee")
@@ -352,7 +357,6 @@ public class EmployeeRestControllerTest {
     }
 
     /**
-     *
      * An employee can move to another team  within the organisation. When moving to a different team, an employee
      * starts reporting to a new manager, without transferring his past subordinates to the new team. Instead, the most
      * senior (based on start date) of his subordinates should be promoted to manage the employee’s former team.
@@ -413,7 +417,6 @@ public class EmployeeRestControllerTest {
                 .content(json(new Action("promote")))
                 .contentType(contentType))
                 .andExpect(status().isOk());
-
 
 
         this.mockMvc.perform(get("/employee/" + director1_2.getId()))
