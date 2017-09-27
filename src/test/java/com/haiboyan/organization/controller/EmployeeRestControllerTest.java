@@ -2,6 +2,7 @@ package com.haiboyan.organization.controller;
 
 
 import com.haiboyan.organization.OrganizationApplication;
+import com.haiboyan.organization.model.Action;
 import com.haiboyan.organization.model.Employee;
 import com.haiboyan.organization.model.Role;
 import com.haiboyan.organization.model.Team;
@@ -24,10 +25,18 @@ import org.springframework.web.context.WebApplicationContext;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.time.LocalDate;
+import java.time.Period;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.List;
 
 import static junit.framework.TestCase.assertNotNull;
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
@@ -41,15 +50,23 @@ public class EmployeeRestControllerTest {
 
     private MockMvc mockMvc;
 
-    private Employee ceo;
-
     private Team company;
+
+    private Employee ceo;
 
     private Team l1Team1, l1Team2;
 
+    private Employee vp1, vp2;
+
     private Team l2Team1_1, l2Team1_2, l2Team1_3, l2Team1_4, l2Team2_1, l2Team2_2, l2Team2_3;
 
+    private Employee director1_1, director1_2, director1_3, director1_4, director2_1, director2_2, director2_3;
+
     private Team l3Team1_1_1, l3Team1_1_2, l3Team1_2_1, l3Team1_3_1, l3Team1_4_1, l3Team2_2_1, l3Team2_2_2, l3Team2_2_3, l3Team2_2_4, l3Team2_3_1;
+
+    private Employee manager1_1_1, manager1_1_2, manager1_2_1, manager1_3_1, manager1_4_1, manager2_2_1, manager2_2_2, manager2_2_3, manager2_2_4, manager2_3_1;
+
+    private List<Employee> employees1_1_1;
 
     private HttpMessageConverter mappingJackson2HttpMessageConverter;
 
@@ -99,75 +116,200 @@ public class EmployeeRestControllerTest {
         teamRepository.save(company);
 
         // Set VP level team and employee
-        Employee vp1 = new Employee("VP1", LocalDate.now(), Role.VP);
+        vp1 = new Employee("VP1", LocalDate.now(), Role.VP);
         vp1.setTeam(company);
         employeeRepository.save(vp1);
         l1Team1.setManager(vp1);
         teamRepository.save(l1Team1);
 
-        Employee vp2 = new Employee("VP2", LocalDate.now(), Role.VP);
+        vp2 = new Employee("VP2", LocalDate.now(), Role.VP);
         vp2.setTeam(company);
         employeeRepository.save(vp2);
         l1Team2.setManager(vp2);
         teamRepository.save(l1Team2);
 
         // Set Director level team and employee
-        Employee director1_1 = new Employee("Direct1_1", LocalDate.now(), Role.Director);
+        director1_1 = new Employee("Direct1_1", LocalDate.now(), Role.Director);
         director1_1.setTeam(l1Team1);
         employeeRepository.save(director1_1);
         l2Team1_1.setManager(director1_1);
         teamRepository.save(l2Team1_1);
 
-        Employee director1_2 = new Employee("Direct1_2", LocalDate.now(), Role.Director);
+        director1_2 = new Employee("Direct1_2", LocalDate.now(), Role.Director);
         director1_2.setTeam(l1Team1);
         employeeRepository.save(director1_2);
         l2Team1_2.setManager(director1_2);
         teamRepository.save(l2Team1_2);
 
-        Employee director1_3 = new Employee("Direct1_3", LocalDate.now(), Role.Director);
+        director1_3 = new Employee("Direct1_3", LocalDate.now(), Role.Director);
         director1_1.setTeam(l1Team1);
         employeeRepository.save(director1_3);
         l2Team1_3.setManager(director1_3);
         teamRepository.save(l2Team1_3);
 
-        Employee director1_4 = new Employee("Direct1_4", LocalDate.now(), Role.Director);
+        director1_4 = new Employee("Direct1_4", LocalDate.now(), Role.Director);
         director1_4.setTeam(l1Team1);
         employeeRepository.save(director1_4);
         l2Team1_4.setManager(director1_4);
         teamRepository.save(l2Team1_4);
 
-        Employee director2_1 = new Employee("Direct2_1", LocalDate.now(), Role.Director);
+        director2_1 = new Employee("Direct2_1", LocalDate.now(), Role.Director);
         director1_1.setTeam(l1Team2);
         employeeRepository.save(director2_1);
         l2Team2_1.setManager(director2_1);
         teamRepository.save(l2Team2_1);
 
-        Employee director2_2 = new Employee("Direct2_2", LocalDate.now(), Role.Director);
+        director2_2 = new Employee("Direct2_2", LocalDate.now(), Role.Director);
         director2_2.setTeam(l1Team2);
         employeeRepository.save(director2_2);
         l2Team2_2.setManager(director2_2);
         teamRepository.save(l2Team2_2);
 
-        Employee director2_3 = new Employee("Direct2_3", LocalDate.now(), Role.Director);
+        director2_3 = new Employee("Direct2_3", LocalDate.now(), Role.Director);
         director2_3.setTeam(l1Team2);
         employeeRepository.save(director2_3);
         l2Team2_3.setManager(director2_3);
         teamRepository.save(l2Team2_3);
+
+        // Set Manager level team and employee
+        manager1_1_1 = new Employee("Manager1_1_1", LocalDate.now(), Role.Manager);
+        manager1_1_1.setTeam(l2Team1_1);
+        manager1_1_1 = employeeRepository.save(manager1_1_1);
+        l3Team1_1_1.setManager(manager1_1_1);
+        teamRepository.save(l3Team1_1_1);
+
+        manager1_1_2 = new Employee("Manager1_1_2", LocalDate.now(), Role.Manager);
+        manager1_1_2.setTeam(l2Team1_1);
+        employeeRepository.save(manager1_1_2);
+        l3Team1_1_2.setManager(manager1_1_2);
+        teamRepository.save(l3Team1_1_2);
+
+        manager1_2_1 = new Employee("Manager1_2_1", LocalDate.now(), Role.Manager);
+        manager1_2_1.setTeam(l2Team1_2);
+        employeeRepository.save(manager1_2_1);
+        l3Team1_2_1.setManager(manager1_2_1);
+        teamRepository.save(l3Team1_2_1);
+
+        manager1_3_1 = new Employee("Manager1_3_1", LocalDate.now(), Role.Manager);
+        manager1_3_1.setTeam(l2Team1_3);
+        employeeRepository.save(manager1_3_1);
+        l3Team1_3_1.setManager(manager1_3_1);
+        teamRepository.save(l3Team1_3_1);
+
+        manager1_4_1 = new Employee("Manager1_4_1", LocalDate.now(), Role.Manager);
+        manager1_4_1.setTeam(l2Team1_2);
+        employeeRepository.save(manager1_4_1);
+        l3Team1_4_1.setManager(manager1_4_1);
+        teamRepository.save(l3Team1_4_1);
+
+        manager2_2_1 = new Employee("Manager2_2_1", LocalDate.now(), Role.Manager);
+        manager2_2_1.setTeam(l2Team2_2);
+        employeeRepository.save(manager2_2_1);
+        l3Team2_2_1.setManager(manager2_2_1);
+        teamRepository.save(l3Team2_2_1);
+
+        manager2_2_2 = new Employee("Manager2_2_2", LocalDate.now(), Role.Manager);
+        manager2_2_2.setTeam(l2Team2_2);
+        employeeRepository.save(manager2_2_2);
+        l3Team2_2_2.setManager(manager2_2_2);
+        teamRepository.save(l3Team2_2_2);
+
+        manager2_2_3 = new Employee("Manager2_2_3", LocalDate.now(), Role.Manager);
+        manager2_2_3.setTeam(l2Team2_2);
+        employeeRepository.save(manager2_2_3);
+        l3Team2_2_3.setManager(manager2_2_3);
+        teamRepository.save(l3Team2_2_3);
+
+        manager2_2_4 = new Employee("Manager2_2_4", LocalDate.now(), Role.Manager);
+        manager2_2_4.setTeam(l2Team2_2);
+        employeeRepository.save(manager2_2_4);
+        l3Team2_2_4.setManager(manager2_2_4);
+        teamRepository.save(l3Team2_2_4);
+
+        manager2_3_1 = new Employee("Manager2_3_1", LocalDate.now(), Role.Manager);
+        manager2_3_1.setTeam(l2Team2_3);
+        employeeRepository.save(manager2_3_1);
+        l3Team2_3_1.setManager(manager2_3_1);
+        teamRepository.save(l3Team2_3_1);
+
+        // Create 10 employee for l3Team1_1_1
+        employees1_1_1 = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            Employee employee = new Employee("l3Team1_1_1 Employee_" + i, LocalDate.now().minus(Period.ofDays(i + 1)), Role.Permanent_Employee);
+            employee.setTeam(l3Team1_1_1);
+            employeeRepository.save(employee);
+            employees1_1_1.add(employee);
+        }
+    }
+//
+//    @Test
+//    public void testTwoCEO() throws Exception {
+//        Employee secondCEO = new Employee("CEO2", LocalDate.now(), Role.CEO);
+//        this.mockMvc.perform(post("/employee")
+//                .content(json(secondCEO))
+//                .contentType(contentType))
+//                .andExpect(status().is4xxClientError());
+//    }
+
+    @Test
+    public void testAddEmployee() throws Exception {
+        int index = 1;
+        for (Role role :EnumSet.allOf(Role.class)) {
+            Employee employee = new Employee("User" + index, LocalDate.now(), role);
+            if (role == Role.CEO) {
+                this.mockMvc.perform(post("/employee")
+                        .content(json(employee))
+                        .contentType(contentType))
+                        .andExpect(status().is4xxClientError());
+            } else {
+                this.mockMvc.perform(post("/employee")
+                        .content(json(employee))
+                        .contentType(contentType))
+                        .andExpect(status().isCreated());
+            }
+        }
     }
 
     @Test
-    public void testTwoCEO() throws Exception {
-        Employee secondCEO = new Employee("CEO2", LocalDate.now(), Role.CEO);
-        this.mockMvc.perform(post("/employee")
-                .content(json(secondCEO))
+    public void testOnLeave() throws Exception {
+        // Test manager1_1_1 on leave
+
+        //Before manager1_1_1 on leave, director1_1 has 2 direct report manager1_1_1, manager1_1_2
+        this.mockMvc.perform(get("/employee/" + director1_1.getId() + "/direct"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)));
+
+        // manager1_1_1 is on leave
+        this.mockMvc.perform(post("/employee/" + manager1_1_1.getId() + "/action")
+                .content(json(new Action("onLeave")))
                 .contentType(contentType))
-                .andExpect(status().is4xxClientError());
+                .andExpect(status().isOk());
+
+        // After manager1_1_1 on leave, all people reported to manager1_1_1 will be reporting to director1_1, which makes
+        // director1_1 has 11 direct report
+        this.mockMvc.perform(get("/employee/" + director1_1.getId() + "/direct"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(11)));
+
+        // manager1_1_1 finish on leave
+        this.mockMvc.perform(post("/employee/" + manager1_1_1.getId() + "/action")
+                .content(json(new Action("comBack")))
+                .contentType(contentType))
+                .andExpect(status().isOk());
+
+        this.mockMvc.perform(get("/employee/" + director1_1.getId() + "/direct"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)));
+
+        this.mockMvc.perform(get("/employee/" + manager1_1_1.getId() + "/direct"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(10)));
+
     }
 
 
     @Autowired
     void setConverters(HttpMessageConverter<?>[] converters) {
-
         this.mappingJackson2HttpMessageConverter = Arrays.asList(converters).stream()
                 .filter(hmc -> hmc instanceof MappingJackson2HttpMessageConverter)
                 .findAny()

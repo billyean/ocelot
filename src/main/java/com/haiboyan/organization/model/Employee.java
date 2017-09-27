@@ -56,6 +56,10 @@ public class Employee {
         return role != Role.Contractor && role != Role.Permanent_Employee;
     }
 
+    public boolean isInPostion() {
+        return state == State.IN_POSITION;
+    }
+
     public String getName() {
         return name;
     }

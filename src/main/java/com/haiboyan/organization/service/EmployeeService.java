@@ -23,7 +23,7 @@ public class EmployeeService {
     @Autowired
     private TeamRepository teamRepository;
 
-    public void onCreateEmployee(Employee employee) throws MultipleCEOException {
+    public Employee onCreateEmployee(Employee employee) throws MultipleCEOException {
         if (employee.getRole() == Role.CEO) {
             // Find all in position or on leave ceo.
             List<Employee> ceos = employeeRepository.findByRole(Role.CEO).stream()
@@ -32,7 +32,7 @@ public class EmployeeService {
                 throw new MultipleCEOException();
             }
         }
-        employeeRepository.save(employee);
+        return employeeRepository.save(employee);
     }
 
     public void onCreateTeam(Team team) {
@@ -43,19 +43,20 @@ public class EmployeeService {
         return employeeRepository.findAll();
     }
 
-    public Set<Employee> allDirectReports(Long employeeId) throws NoSuchEmployeeException {
+    public Set<Employee> allDirectReports(Long employeeId) {
         Employee employee = employeeRepository.findOne(employeeId);
         if (employee == null)
-            throw new NoSuchEmployeeException(employeeId);
+            return new HashSet<>();
         Team team = teamRepository.findByManagerId(employeeId);
-        Set<Employee> directReports = new HashSet(employeeRepository.findByTeam(team));
-        Set<Employee> directTempReports = new HashSet(employeeRepository.findByTempTeam(team));
+        Set<Employee> directReports = employeeRepository.findByTeam(team).stream().filter(Employee::isInPostion).collect(toSet());
+        Set<Employee> directTempReports = employeeRepository.findByTempTeam(team).stream().filter(Employee::isInPostion).collect(toSet());
         directReports.addAll(directTempReports);
         return directReports;
     }
 
     public void onLeave(Long employeeId) throws InvalidStateChangeException, NoSuchEmployeeException {
         Employee employee = employeeRepository.findOne(employeeId);
+        System.out.println(employee);
         if (employee == null)
             throw new NoSuchEmployeeException(employeeId);
         stateChange(employee, State.ON_LEAVE);
@@ -80,7 +81,7 @@ public class EmployeeService {
     }
 
     private void stateChange(Employee employee, State newState) throws InvalidStateChangeException {
-        if (employee.getState().validNewState(newState)) {
+        if (!employee.getState().validNewState(newState)) {
             throw new InvalidStateChangeException(employee.getState(), newState);
         }
         employee.setState(newState);

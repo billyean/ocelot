@@ -14,9 +14,6 @@ public class Team {
     @Column(nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "team")
-    private Set<Employee> employees = new HashSet<>();
-
     @OneToOne
     private Employee manager;
 
@@ -28,14 +25,6 @@ public class Team {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Set<Employee> getEmployees() {
-        return employees;
-    }
-
-    public void setEmployees(Set<Employee> employees) {
-        this.employees = employees;
     }
 
     public Employee getManager() {
