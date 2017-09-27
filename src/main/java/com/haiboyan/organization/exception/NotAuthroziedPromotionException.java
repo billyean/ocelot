@@ -15,6 +15,10 @@
  */
 package com.haiboyan.organization.exception;
 
+/**
+ * Special rule checking before promotion happens, NotAuthroziedPromotionException thrown is the employee is not
+ * qualified for such promotion.
+ */
 public class NotAuthroziedPromotionException extends Exception {
     public NotAuthroziedPromotionException(String reason) {
         super(String.format("Not ready to be promoted: %s", reason));

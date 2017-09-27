@@ -17,6 +17,10 @@ package com.haiboyan.organization.exception;
 
 import com.haiboyan.organization.model.State;
 
+/**
+ * Before any action happens to employee, check validation ofr state change. InvalidStateChangeException thrown if such
+ * state change is not valid.
+ */
 public class InvalidStateChangeException extends Exception {
     public InvalidStateChangeException(State preState, State newState) {
         super(String.format("Invalid state change from %s to %s",
