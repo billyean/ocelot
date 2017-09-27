@@ -17,11 +17,11 @@ public enum Role {
         this.name = name;
     }
 
-    int getLevel() {
+    public int getLevel() {
         return level;
     }
 
-    Role nextLevel() {
+    public Role nextLevel() {
         switch (this) {
             case VP:
                 return CEO;
@@ -34,5 +34,9 @@ public enum Role {
             default:
                 return this;
         }
+    }
+
+    public boolean isManager() {
+        return level < 5;
     }
 }
