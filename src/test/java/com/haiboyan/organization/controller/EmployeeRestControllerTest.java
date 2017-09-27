@@ -388,15 +388,27 @@ public class EmployeeRestControllerTest {
 
     @Test
     public void testOnPromoteSuccess() throws Exception {
+        this.mockMvc.perform(get("/employee/" + director1_2.getId() + "/manager")
+                .contentType(contentType))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name", is("VP1")));
+
         // director1_1 only has 12 total reports, should not be able to be promoted
         this.mockMvc.perform(post("/employee/" + director1_2.getId() + "/action")
                 .content(json(new Action("promote")))
                 .contentType(contentType))
                 .andExpect(status().isOk());
+
+
+
         this.mockMvc.perform(get("/employee/" + director1_2.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.role", is("VP")));
 
+        this.mockMvc.perform(get("/employee/" + director1_2.getId() + "/manager")
+                .contentType(contentType))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name", is("CEO1")));
     }
 
 
