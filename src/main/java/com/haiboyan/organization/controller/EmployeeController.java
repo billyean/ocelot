@@ -32,6 +32,11 @@ public class EmployeeController {
         }
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "/{employeeId}")
+    Employee getEmployee(@PathVariable Long employeeId) {
+        return employeeService.getEmployee(employeeId);
+    }
+
     @RequestMapping(method = RequestMethod.GET)
     Collection<Employee> getAllEmployees() {
         return employeeService.allEmployees();

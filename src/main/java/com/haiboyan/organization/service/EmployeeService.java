@@ -39,6 +39,10 @@ public class EmployeeService {
         teamRepository.save(team);
     }
 
+    public Employee getEmployee(Long employeeId) {
+        return employeeRepository.findOne(employeeId);
+    }
+
     public List<Employee> allEmployees() {
         return employeeRepository.findAll();
     }
@@ -48,6 +52,10 @@ public class EmployeeService {
         if (employee == null)
             return new HashSet<>();
         Team team = teamRepository.findByManagerId(employeeId);
+
+        if (null == team) {
+            return new HashSet<>();
+        }
         Set<Employee> directReports = employeeRepository.findByTeam(team).stream().filter(Employee::isInPostion).collect(toSet());
         Set<Employee> directTempReports = employeeRepository.findByTempTeam(team).stream().filter(Employee::isInPostion).collect(toSet());
         directReports.addAll(directTempReports);
@@ -122,7 +130,7 @@ public class EmployeeService {
 
     private Optional<Employee> mostSeniorPermanent(Team team) {
         Collection<Employee> employees = employeeRepository.findByTeam(team);
-        return employees.stream().filter(Employee::isPermanent).min(Comparator.comparing(Employee::getState));
+        return employees.stream().filter(Employee::isPermanent).min(Comparator.comparing(Employee::getHireDate));
     }
 
     public void moveNewTeam(Long employeeId, Long newTeamId) throws NoSuchEmployeeException, NoSuchTeamException {
@@ -131,14 +139,32 @@ public class EmployeeService {
             throw new NoSuchEmployeeException(employeeId);
         Team newTeam = teamRepository.findOne(newTeamId);
         Team currentTeam = employee.getTeam();
+        Team currentManaged = teamRepository.findByManagerId(employeeId);
         if (newTeam == null)
             throw new NoSuchTeamException(newTeamId);
 
         employee.setTeam(newTeam);
         employeeRepository.save(employee);
 
-        currentTeam.setManager(mostSeniorPermanent(currentTeam).get());
-        teamRepository.save(currentTeam);
+        // Promote most senior one as the manager
+        if (currentManaged != null) {
+            Optional<Employee> optional = mostSeniorPermanent(currentManaged);
+
+            if (optional.isPresent()) {
+                Employee mostSenior = optional.get();
+
+                moveNewTeam(mostSenior.getId(), currentTeam.getId());
+                if (currentManaged != null) {
+                    currentManaged.setManager(mostSenior);
+                    teamRepository.save(currentTeam);
+                }
+            } else {
+                if (currentManaged != null) {
+                    currentManaged.setManager(null);
+                    teamRepository.save(currentTeam);
+                }
+            }
+        }
     }
 
     public void promote(Long employeeId) throws NoSuchEmployeeException, MultipleCEOException, NotAuthroziedPromotionException {
@@ -148,27 +174,27 @@ public class EmployeeService {
 
         Role nextLevel = employee.getRole().nextLevel();
         Set<Employee> allReports = allReport(employee);
+        Set<Employee> directReports = directReport(employee);
 
         int numOfReports = allReport(employee).size();
+        Set<Employee> allDirectManagers
+                = directReports.stream().filter(Employee::isManager).collect(toSet());
 
         switch (nextLevel) {
             case CEO:
                 throw new MultipleCEOException();
             case VP:
-                Set<Employee> allReportDirectors
-                        = allReports.stream().filter(e -> e.getRole() == Role.Director).collect(toSet());
-                if(allReports.size() < 40 || allReportDirectors.size() < 4) {
+                if(allReports.size() < 40 || allDirectManagers.size() < 4) {
                     throw new NotAuthroziedPromotionException("To be promoted to VP needs at least 40 employees in his organisation including at least 4 directors");
                 }
             case Director:
-                Set<Employee> allReportManagers
-                        = allReports.stream().filter(e -> e.getRole() == Role.Manager).collect(toSet());
-                if(allReports.size() < 20 || allReportManagers.size() < 2) {
+                if(allReports.size() < 20 || allDirectManagers.size() < 2) {
                     throw new NotAuthroziedPromotionException("To be promoted to Directors needs at least 20 employees in his organisation including at least 2 managers");
                 }
         }
         Employee supervisor = employee.getTeam().getManager();
         employee.setTeam(supervisor.getTeam());
+        employee.setRole(nextLevel);
         employeeRepository.save(employee);
     }
 

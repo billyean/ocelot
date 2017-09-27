@@ -7,6 +7,7 @@ import java.util.UUID;
 
 @Entity
 public class Team {
+
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
@@ -18,6 +19,14 @@ public class Team {
     private Employee manager;
 
     public Team() {}
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;
