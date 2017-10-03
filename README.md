@@ -1,4 +1,4 @@
-# *Organization Manager* (Intuit QBO interview questions)
+# *Organization Manager(Intuit QBO interview questions)* 
 
 **Organization Manager** is a spring boot application that let people to create a company structure 
 
