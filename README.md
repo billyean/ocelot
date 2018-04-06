@@ -1,6 +1,6 @@
-# *Organization Manager(Intuit QBO interview questions)* 
+# *Ocelot(Intuit QBO interview questions)* 
 
-**Organization Manager** is a spring boot application that let people to create a company structure 
+**Ocelot** is a spring boot application that let people to create a company structure 
 
 Time spent: **8** hours spent in total
 
