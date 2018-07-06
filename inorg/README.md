@@ -1,6 +1,6 @@
-# *Ocelot(Intuit QBO interview questions)* 
+# *InOrg(Intuit QBO interview questions)* 
 
-**Ocelot** is a spring boot application that let people to create a company structure 
+**InOrg** is a spring boot application that let people to create a company structure 
 
 Time spent: **8** hours spent in total
 
