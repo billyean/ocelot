@@ -8,7 +8,7 @@ import java.util.Arrays;
 /**
  * Learn how to create Flux instances.
  *
- * @author Sebastien Deleuze
+ * @author Haibo Yan(Tristan)
  * @see <a href="http://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html">Flux Javadoc</a>
  */
 public class Part01Flux {

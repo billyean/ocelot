@@ -26,7 +26,7 @@ import reactor.test.StepVerifier;
 /**
  * Learn how to use StepVerifier to test Mono, Flux or any other kind of Reactive Streams Publisher.
  *
- * @author Sebastien Deleuze
+ * @author Haibo Yan(Tristan)
  * @see <a href="http://projectreactor.io/docs/test/release/api/reactor/test/StepVerifier.html">StepVerifier Javadoc</a>
  */
 public class Part03StepVerifier {
@@ -60,7 +60,7 @@ public class Part03StepVerifier {
 			.verifyComplete();
 	}
 
-	// TODO Expect 3600 elements at intervals of 1 second, and verify quicker than 3600s
+	// Expect 3600 elements at intervals of 1 second, and verify quicker than 3600s
 	// by manipulating virtual time thanks to StepVerifier#withVirtualTime, notice how long the test takes
 	void expect3600Elements(Supplier<Flux<Long>> supplier) {
 		StepVerifier.withVirtualTime(supplier)

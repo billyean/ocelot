@@ -7,11 +7,9 @@ import reactor.core.publisher.Mono;
 /**
  * Learn how to transform values.
  *
- * @author Sebastien Deleuze
+ * @author Haibo Yan(Tristan)
  */
 public class Part04Transform {
-
-//========================================================================================
 
 	// Capitalize the user username, firstname and lastname
 	Mono<User> capitalizeOne(Mono<User> mono) {
@@ -26,8 +24,6 @@ public class Part04Transform {
 			user.getFirstname().toUpperCase(),
 			user.getLastname().toUpperCase()));
 	}
-
-//========================================================================================
 
 	// Capitalize the users username, firstName and lastName using #asyncCapitalizeUser
 	Flux<User> asyncCapitalizeMany(Flux<User> flux) {

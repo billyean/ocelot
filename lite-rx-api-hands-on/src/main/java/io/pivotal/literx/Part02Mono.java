@@ -5,7 +5,7 @@ import reactor.core.publisher.Mono;
 /**
  * Learn how to create Mono instances.
  *
- * @author Sebastien Deleuze
+ * @author Haibo Yan(Tristan)
  * @see <a href="http://projectreactor.io/docs/core/release/api/reactor/core/publisher/Mono.html">Mono Javadoc</a>
  */
 public class Part02Mono {

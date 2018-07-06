@@ -9,7 +9,7 @@ import reactor.test.StepVerifier;
 /**
  * Learn how to control the demand.
  *
- * @author Sebastien Deleuze
+ * @author Haibo Yan(Tristan)
  */
 public class Part06Request {
 

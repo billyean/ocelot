@@ -7,7 +7,7 @@ import reactor.core.publisher.Mono;
 /**
  * Learn how to merge flux.
  *
- * @author Sebastien Deleuze
+ * @author Haibo Yan(Tristan)
  */
 public class Part05Merge {
 
