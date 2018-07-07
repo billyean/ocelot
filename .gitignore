@@ -1,6 +1,7 @@
 **/*.class
 **/*.war
 **/*.ear
+**/.mvn/**
 **/target/
 **/*.iml
 **/.idea/
